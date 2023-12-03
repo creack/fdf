@@ -7,6 +7,9 @@ import (
 
 // drawLine from p0 to p1.
 func drawLine(dst *image.RGBA, p0, p1 image.Point, clr color.Color) {
+	if clr == nil {
+		clr = color.White
+	}
 	rect := image.Rectangle{Min: p0, Max: p1}.Canon()
 	if rect.Dx() > rect.Dy() {
 		drawLineHoriz(dst, p0, p1, clr)

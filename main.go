@@ -6,6 +6,7 @@ import (
 	"fmt"
 	_ "image/png"
 	"log"
+	"runtime"
 
 	"fdf/render/ebitenrenderer"
 	"fdf/render/pngrenderer"
@@ -33,8 +34,10 @@ func main() {
 		log.Fatalf("NewGame: %s.", err)
 	}
 
-	if err := pngrenderer.New("foo.png", 2050, 1100).Run(g); err != nil {
-		log.Fatal(err)
+	if runtime.GOOS != "js" {
+		if err := pngrenderer.New("foo.png", 2050, 1100).Run(g); err != nil {
+			log.Fatal(err)
+		}
 	}
 
 	if err := ebitenrenderer.New(1024, 1024).Run(g); err != nil {

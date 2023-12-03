@@ -20,18 +20,28 @@ func (v Vec3) Scale(scale float64) Vec3 {
 	}
 }
 
+// Translate the vector.
+func (v Vec3) Translate(offset Vec3) Vec3 {
+	return Vec3{
+		X:     v.X + offset.X,
+		Y:     v.Y + offset.Y,
+		Z:     v.Z + offset.Z,
+		Color: v.Color,
+	}
+}
+
+func (v Vec3) MultiplyMatrix(m matrix3) Vec3 {
+	return Vec3{
+		X:     v.X*m.i.X + v.Y*m.i.Y + v.Z*m.i.Z,
+		Y:     v.X*m.j.X + v.Y*m.j.Y + v.Z*m.j.Z,
+		Z:     v.X*m.k.X + v.Y*m.k.Y + v.Z*m.k.Z,
+		Color: v.Color,
+	}
+}
+
 // matrix3 is a 3D matrix.
 type matrix3 struct {
 	i, j, k Vec3
-}
-
-// MultiplyVectorMatrix performs v * m.
-func MultiplyVectorMatrix(v Vec3, m matrix3) Vec3 {
-	lv := [3]float64{v.X, v.Y, v.Z}
-	v.X = lv[0]*m.i.X + lv[1]*m.i.Y + lv[2]*m.i.Z
-	v.Y = lv[0]*m.j.X + lv[1]*m.j.Y + lv[2]*m.j.Z
-	v.Z = lv[0]*m.k.X + lv[1]*m.k.Y + lv[2]*m.k.Z
-	return v
 }
 
 func rad(deg float64) float64 {

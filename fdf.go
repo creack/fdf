@@ -49,10 +49,6 @@ func (m *Fdf) SetProjection(p projection.Projection) image.Rectangle {
 	return m.bounds
 }
 
-func (m *Fdf) IncScale(n float64) {}
-
-func (m *Fdf) SetScale(n float64) {}
-
 func (m *Fdf) Draw() image.Image {
 	img := image.NewRGBA(m.bounds)
 

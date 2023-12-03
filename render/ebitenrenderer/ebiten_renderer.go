@@ -2,11 +2,8 @@ package ebitenrenderer
 
 import (
 	"fmt"
-	"image"
 	"image/color"
-	"math"
 
-	"fdf/math3"
 	"fdf/projection"
 	"fdf/render"
 
@@ -37,9 +34,9 @@ func (g *Game) handleFdfKeys(keys []ebiten.Key) {
 		// case ebiten.Key2:
 		// 	m.depthChange += 0.1
 		case ebiten.Key3:
-			g.fdf.IncScale(1)
+			// g.fdf.IncScale(1)
 		case ebiten.Key4:
-			g.fdf.IncScale(-1)
+			// g.fdf.IncScale(-1)
 
 			// case ebiten.KeyUp:
 			// 	m.deg.x += 0.01
@@ -64,70 +61,35 @@ func (g *Game) handleFdfKeys(keys []ebiten.Key) {
 
 func (g *Game) Draw(screen *ebiten.Image) {
 	// Get the screen size.
-	screenWidth := screen.Bounds().Dx()
-	screenHeight := screen.Bounds().Dy()
+	screenWidth, screenHeight := screen.Bounds().Dx(), screen.Bounds().Dy()
+
+	// Set the isometric projection.
+	bounds := g.fdf.SetProjection(projection.NewIsomorphic(projection.GetScale(screenWidth, screenHeight, g.fdf.SetProjection(projection.NewIsomorphic(1)))))
+
+	vector.StrokeRect(screen, float32(bounds.Min.X), float32(bounds.Min.Y), float32(bounds.Max.X), float32(bounds.Max.Y), 2, color.RGBA{A: 255, R: 255}, false)
+
+	// NOTE: NewImageFromImage automatically fits the image back into 0,0 origin.
+	fdfImg := ebiten.NewImageFromImage(g.fdf.Draw())
+	bounds = fdfImg.Bounds()
 
 	vector.StrokeRect(screen, 1, 1, float32(screenWidth-2), float32(screenHeight-2), 2, color.White, false)
 
-	// Set the inital projection with scale 1, no offset, no camera rotation.
-	g.fdf.SetProjection(projection.NewIsomorphic(1, image.Point{}, math3.Vec3{
-		X: math.Atan(math.Sqrt2),
-		Z: 45,
-	}))
-
-	// Get the inital bounds.
-	bounds := g.fdf.Draw().Bounds()
-
-	vector.StrokeRect(screen, float32(bounds.Min.X), float32(bounds.Min.Y), float32(bounds.Max.X), float32(bounds.Max.Y), 2, color.RGBA{A: 255, B: 255}, false)
-
-	// Lookup the scale based on the screen size and the scaled boundaries.
-	s := float64(projection.GetScale(screenWidth, screenHeight, bounds))
-	// Update the projection with the new scale and set default camera.
-	bounds = g.fdf.SetProjection(projection.NewIsomorphic(int(s), image.Point{}, math3.Vec3{
-		X: math.Atan(math.Sqrt2),
-		Z: 45,
-	}))
-
-	vector.StrokeRect(screen, float32(bounds.Min.X), float32(bounds.Min.Y), float32(bounds.Max.X), float32(bounds.Max.Y), 2, color.RGBA{A: 255, G: 255}, false)
-
-	offset := projection.GetOffsetCenter(screenWidth, screenHeight, bounds)
-	g.fdf.SetProjection(projection.NewIsomorphic(int(s), offset, math3.Vec3{
-		X: math.Atan(math.Sqrt2),
-		Z: 45,
-	}))
-
-	vector.DrawFilledCircle(screen, float32(offset.X), float32(offset.Y), 5, color.White, false)
-	vector.DrawFilledCircle(screen, float32(screenWidth)/2, float32(screenHeight)/2, 15, color.RGBA{A: 255, G: 255, B: 100}, false)
-
-	bounds = g.fdf.Draw().Bounds()
-	offset2 := projection.GetOffsetCenter(screenWidth, screenHeight, bounds)
-	vector.StrokeRect(screen, float32(bounds.Min.X), float32(bounds.Min.Y), float32(bounds.Max.X), float32(bounds.Max.Y), 2, color.RGBA{A: 255, R: 255}, false)
-
-	col11 := g.fdf.Draw().At(21, 12)
-
-	fdfImg := ebiten.NewImageFromImage(g.fdf.Draw())
+	vector.StrokeRect(fdfImg, float32(bounds.Min.X), float32(bounds.Min.Y), float32(bounds.Max.X), float32(bounds.Max.Y), 2, color.RGBA{A: 255, B: 255}, false)
 
 	op := &ebiten.DrawImageOptions{}
-	// op.GeoM.Translate(float64(offset.X), float64(offset.Y))
+	offset := projection.GetOffsetCenter(screenWidth, screenHeight, bounds)
+	op.GeoM.Translate(float64(offset.X), float64(offset.Y))
 	screen.DrawImage(fdfImg, op)
 
 	msg := fmt.Sprintf(`TPS: %0.2f
 FPS: %0.2f
-Scale: %0.2f
 Sizes:
   - Screen: %d/%d
-  - Fdf: %d/%d
-Offset0: %d/%d
-Offset1: %d/%d
-Col11: %v
+  - Fdf: %v
 `, ebiten.ActualTPS(),
 		ebiten.ActualFPS(),
-		s,
 		screenWidth, screenHeight,
-		bounds.Dx(), bounds.Dy(),
-		offset.X, offset.Y,
-		offset2.X, offset2.Y,
-		col11,
+		bounds,
 	)
 	ebitenutil.DebugPrintAt(screen, msg, screenWidth-150, 1)
 }

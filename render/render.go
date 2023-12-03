@@ -14,9 +14,6 @@ type Renderer interface {
 type Engine interface {
 	SetProjection(projection.Projection) image.Rectangle
 	Draw() image.Image
-
-	IncScale(n float64)
-	SetScale(n float64)
 }
 
 // // StubEngine implements the Renderer interface with no-op methods.
