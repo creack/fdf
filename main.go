@@ -8,6 +8,7 @@ import (
 	"log"
 
 	"fdf/render/ebitenrenderer"
+	"fdf/render/pngrenderer"
 )
 
 //go:embed maps/*.fdf
@@ -32,9 +33,9 @@ func main() {
 		log.Fatalf("NewGame: %s.", err)
 	}
 
-	// if err := pngrenderer.New("foo.png", 2050, 1100).Run(g); err != nil {
-	// 	log.Fatal(err)
-	// }
+	if err := pngrenderer.New("foo.png", 2050, 1100).Run(g); err != nil {
+		log.Fatal(err)
+	}
 
 	if err := ebitenrenderer.New(1024, 1024).Run(g); err != nil {
 		log.Fatal(err)

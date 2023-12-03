@@ -5,18 +5,13 @@ import (
 	"image"
 	"math"
 
-	"fdf/math3"
 	"fdf/projection"
 )
 
 type Fdf struct {
-	offset         image.Point
-	cameraRotation math3.Vec3
-
-	depthScale float64
-
 	Points [][]MapPoint
 
+	bounds     image.Rectangle
 	projection projection.Projection
 }
 
@@ -31,9 +26,9 @@ func newFdf(mapData []byte) (*Fdf, error) {
 	}
 	g.Points = m
 
-	g.depthScale = 1
-	g.cameraRotation.X = defaultXDeg
-	g.cameraRotation.Z = defaultZDeg
+	// g.depthScale = 1
+	// g.cameraRotation.X = defaultXDeg
+	// g.cameraRotation.Z = defaultZDeg
 
 	// bounds := g.getProjectedBounds(1)
 	// g.scale = getScale(bounds)
@@ -47,19 +42,19 @@ func newFdf(mapData []byte) (*Fdf, error) {
 	return g, nil
 }
 
-func (m *Fdf) SetProjection(p projection.Projection) { m.projection = p }
+func (m *Fdf) SetProjection(p projection.Projection) image.Rectangle {
+	m.projection = p
+	// Process the new bounds and return them.
+	m.bounds = m.getProjectedBounds()
+	return m.bounds
+}
 
 func (m *Fdf) IncScale(n float64) {}
 
 func (m *Fdf) SetScale(n float64) {}
 
-var (
-	defaultZDeg float64 = 45
-	defaultXDeg float64 = math.Atan(math.Sqrt2)
-)
-
 func (m *Fdf) Draw() image.Image {
-	img := image.NewRGBA(m.getProjectedBounds())
+	img := image.NewRGBA(m.bounds)
 
 	for j, line := range m.Points {
 		for i, elem := range line {

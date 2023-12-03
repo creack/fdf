@@ -12,7 +12,7 @@ type Renderer interface {
 
 // Engine defines the possible methods to interract from the Renderer to the Engine.
 type Engine interface {
-	SetProjection(projection.Projection)
+	SetProjection(projection.Projection) image.Rectangle
 	Draw() image.Image
 
 	IncScale(n float64)

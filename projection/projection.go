@@ -1,11 +1,21 @@
 package projection
 
 import (
-	"fmt"
 	"image"
 	"math"
 
 	"fdf/math3"
+)
+
+//nolint:gochecknoglobals // Expected "readonly" globals.
+var (
+	defaultXDeg float64 = math.Atan(math.Sqrt2)
+	defaultZDeg float64 = 45
+
+	defaultCameraRotation = math3.Vec3{
+		X: defaultXDeg,
+		Z: defaultZDeg,
+	}
 )
 
 // Projection defines how to project the given 3d point.
@@ -21,18 +31,15 @@ func (direct) Project(vec math3.Vec3) math3.Vec3 { return vec }
 
 // isomorphic projection.
 type isomorphic struct {
-	scale  int
-	offset image.Point
+	scale int
 
 	cameraRotation math3.Vec3
 }
 
-// NewIsomorphic creates the projection.
-func NewIsomorphic(scale int, offset image.Point, cameraRotation math3.Vec3) Projection {
+func NewIsomorphic2(scale int) Projection {
 	return &isomorphic{
 		scale:          scale,
-		offset:         offset,
-		cameraRotation: cameraRotation,
+		cameraRotation: defaultCameraRotation,
 	}
 }
 
@@ -45,14 +52,6 @@ func (i isomorphic) Project(vec math3.Vec3) math3.Vec3 {
 	vec = math3.MultiplyVectorMatrix(vec, math3.GetRotationMatrix(i.cameraRotation.X, math3.AxisX))
 	vec = math3.MultiplyVectorMatrix(vec, math3.GetRotationMatrix(i.cameraRotation.Y, math3.AxisY))
 
-	// Then translate.
-	vec = math3.Vec3{
-		X:     vec.X + float64(i.offset.X),
-		Y:     vec.Y + float64(i.offset.Y),
-		Z:     vec.Z,
-		Color: vec.Color,
-	}
-
 	return vec
 }
 
@@ -60,9 +59,7 @@ func GetScale(screenWidth, screenHeight int, bounds image.Rectangle) int {
 	width := bounds.Dx()
 	height := bounds.Dy()
 
-	out := min((screenWidth-screenWidth/8.0)/width, (screenHeight-screenHeight/8.0)/height)
-	fmt.Printf("Screen H: %d, H: %d, Scaled H: %d\n", screenHeight, height, out*height)
-	return out
+	return min((screenWidth-screenWidth/8.0)/width, (screenHeight-screenHeight/8.0)/height)
 }
 
 func GetOffsetCenter(screenWidth, screenHeight int, bounds image.Rectangle) image.Point {

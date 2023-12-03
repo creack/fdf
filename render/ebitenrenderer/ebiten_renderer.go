@@ -83,11 +83,10 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	// Lookup the scale based on the screen size and the scaled boundaries.
 	s := float64(projection.GetScale(screenWidth, screenHeight, bounds))
 	// Update the projection with the new scale and set default camera.
-	g.fdf.SetProjection(projection.NewIsomorphic(int(s), image.Point{}, math3.Vec3{
+	bounds = g.fdf.SetProjection(projection.NewIsomorphic(int(s), image.Point{}, math3.Vec3{
 		X: math.Atan(math.Sqrt2),
 		Z: 45,
 	}))
-	bounds = g.fdf.Draw().Bounds()
 
 	vector.StrokeRect(screen, float32(bounds.Min.X), float32(bounds.Min.Y), float32(bounds.Max.X), float32(bounds.Max.Y), 2, color.RGBA{A: 255, G: 255}, false)
 
