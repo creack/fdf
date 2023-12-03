@@ -70,7 +70,10 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	vector.StrokeRect(screen, 1, 1, float32(screenWidth-2), float32(screenHeight-2), 2, color.White, false)
 
 	// Set the inital projection with scale 1, no offset, no camera rotation.
-	g.fdf.SetProjection(projection.NewIsomorphic(1, image.Point{}, math3.Vec3{}))
+	g.fdf.SetProjection(projection.NewIsomorphic(1, image.Point{}, math3.Vec3{
+		X: math.Atan(math.Sqrt2),
+		Z: 45,
+	}))
 
 	// Get the inital bounds.
 	bounds := g.fdf.Draw().Bounds()
@@ -134,19 +137,14 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 	return outsideWidth, outsideHeight
 }
 
-type renderer struct {
-	width, height int
-}
+type renderer struct{}
 
 func New(width, height int) render.Renderer {
 	ebiten.SetWindowSize(width*2, height*2)
 	ebiten.SetWindowTitle("FDF")
 	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
 
-	return &renderer{
-		width:  width,
-		height: height,
-	}
+	return &renderer{}
 }
 
 func (r *renderer) Run(fdf render.Engine) error {

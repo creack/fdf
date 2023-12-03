@@ -45,7 +45,6 @@ func (i isomorphic) Project(vec math3.Vec3) math3.Vec3 {
 	vec = math3.MultiplyVectorMatrix(vec, math3.GetRotationMatrix(i.cameraRotation.X, math3.AxisX))
 	vec = math3.MultiplyVectorMatrix(vec, math3.GetRotationMatrix(i.cameraRotation.Y, math3.AxisY))
 
-	return vec
 	// Then translate.
 	vec = math3.Vec3{
 		X:     vec.X + float64(i.offset.X),

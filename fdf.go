@@ -9,11 +9,6 @@ import (
 	"fdf/projection"
 )
 
-const (
-	WIDTH  = screenWidth
-	HEIGHT = screenHeight
-)
-
 type Fdf struct {
 	offset         image.Point
 	cameraRotation math3.Vec3

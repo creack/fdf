@@ -7,12 +7,7 @@ import (
 	_ "image/png"
 	"log"
 
-	"fdf/render/pngrenderer"
-)
-
-const (
-	screenWidth  = 1024
-	screenHeight = 1024
+	"fdf/render/ebitenrenderer"
 )
 
 //go:embed maps/*.fdf
@@ -37,11 +32,11 @@ func main() {
 		log.Fatalf("NewGame: %s.", err)
 	}
 
-	if err := pngrenderer.New("foo.png", 400, 400).Run(g); err != nil {
-		log.Fatal(err)
-	}
-
-	// if err := ebitenrenderer.New(screenWidth, screenHeight).Run(g); err != nil {
+	// if err := pngrenderer.New("foo.png", 2050, 1100).Run(g); err != nil {
 	// 	log.Fatal(err)
 	// }
+
+	if err := ebitenrenderer.New(1024, 1024).Run(g); err != nil {
+		log.Fatal(err)
+	}
 }

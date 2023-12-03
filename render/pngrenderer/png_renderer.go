@@ -50,13 +50,18 @@ func (r *renderer) Run(g render.Engine) error {
 	fmt.Println(">>", g.Draw().Bounds())
 	fmt.Println(">>1", canvas.Bounds().Dx(), canvas.Bounds().Dy())
 
-	fdfImg := g.Draw()
-	_ = fdfImg
 	offset := projection.GetOffsetCenter(canvas.Bounds().Dx(), canvas.Bounds().Dy(), bounds)
 	_ = offset
+	fmt.Printf("GetOffseetCenter: %v\n", offset)
 
+	g.SetProjection(projection.NewIsomorphic(s, offset, math3.Vec3{
+		X: math.Atan(math.Sqrt2),
+		Z: 45,
+	}))
+	fdfImg := g.Draw()
+	_ = fdfImg
 	// Draw the fdf in the canvas.
-	draw.Draw(canvas, canvas.Bounds(), fdfImg, offset.Mul(-1), draw.Src)
+	draw.Draw(canvas, canvas.Bounds(), fdfImg, image.Point{}, draw.Src)
 
 	center := offset
 	for i := 0; i < r.height; i++ {
