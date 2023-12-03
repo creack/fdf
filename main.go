@@ -7,7 +7,7 @@ import (
 	_ "image/png"
 	"log"
 
-	"fdf/render/ebitenrenderer"
+	"fdf/render/pngrenderer"
 )
 
 const (
@@ -36,7 +36,12 @@ func main() {
 	if err != nil {
 		log.Fatalf("NewGame: %s.", err)
 	}
-	if err := ebitenrenderer.Render(g); err != nil {
+
+	if err := pngrenderer.New("foo.png", 400, 400).Run(g); err != nil {
 		log.Fatal(err)
 	}
+
+	// if err := ebitenrenderer.New(screenWidth, screenHeight).Run(g); err != nil {
+	// 	log.Fatal(err)
+	// }
 }

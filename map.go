@@ -1,13 +1,12 @@
 package main
 
 import (
-	"fdf/math3"
 	"fmt"
-	"image"
 	"image/color"
-	"math"
 	"strconv"
 	"strings"
+
+	"fdf/math3"
 )
 
 // TODO: Consider moving this to the renderer.
@@ -87,33 +86,4 @@ func (mp MapPoint) Vector() math3.Vec3 {
 		Z:     float64(mp.height),
 		Color: mp.color,
 	}
-}
-
-// getProjectedBounds projects and scales each points of the map
-// and returns the smallest boundaries fitting everything.
-//
-// Going over each point as the projection of any given point can result
-// in a bigger viewport.
-func (m *Fdf) getProjectedBounds(scale float64) image.Rectangle {
-	var border image.Rectangle
-
-	for _, line := range m.Points {
-		for _, elem := range line {
-			point := m.cartesianToIsometric(elem.Vector().Scale(scale))
-
-			if math.Floor(point.X) < float64(border.Min.X) {
-				border.Min.X = int(math.Floor(point.X))
-			} else if math.Ceil(point.X) > float64(border.Max.X) {
-				border.Max.X = int(math.Ceil(point.X))
-			}
-			if math.Floor(point.Y) < float64(border.Min.Y) {
-				border.Min.Y = int(math.Floor(point.Y))
-			} else if math.Ceil(point.Y) > float64(border.Max.Y) {
-				border.Max.Y = int(math.Ceil(point.Y))
-			}
-
-		}
-	}
-
-	return border
 }
