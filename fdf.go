@@ -5,6 +5,7 @@ import (
 	"image"
 	"math"
 
+	"fdf/math3"
 	"fdf/render"
 )
 
@@ -18,7 +19,7 @@ type Fdf struct {
 
 	scale          float64
 	offset         image.Point
-	cameraRotation vec3
+	cameraRotation math3.Vec3
 
 	depthScale float64
 
@@ -34,11 +35,11 @@ var (
 	defaultXDeg float64 = math.Atan(math.Sqrt2)
 )
 
-func (m *Fdf) cartesianToIsometric(vec vec3) vec3 {
-	vec.z *= m.depthScale
-	vec = multiplyVectorMatrix(vec, getRotationMatrix(m.cameraRotation.z, AxisZ))
-	vec = multiplyVectorMatrix(vec, getRotationMatrix(m.cameraRotation.x, AxisX))
-	vec = multiplyVectorMatrix(vec, getRotationMatrix(m.cameraRotation.y, AxisY))
+func (m *Fdf) cartesianToIsometric(vec math3.Vec3) math3.Vec3 {
+	vec.Z *= m.depthScale
+	vec = math3.MultiplyVectorMatrix(vec, math3.GetRotationMatrix(m.cameraRotation.Z, math3.AxisZ))
+	vec = math3.MultiplyVectorMatrix(vec, math3.GetRotationMatrix(m.cameraRotation.X, math3.AxisX))
+	vec = math3.MultiplyVectorMatrix(vec, math3.GetRotationMatrix(m.cameraRotation.Y, math3.AxisY))
 	return vec
 }
 
@@ -48,17 +49,17 @@ func (m *Fdf) Draw() image.Image {
 	for j, line := range m.Points {
 		for i, elem := range line {
 			v := m.scaleOffset(elem.Vector())
-			pv := image.Point{X: int(v.x), Y: int(v.y)}
+			pv := image.Point{X: int(v.X), Y: int(v.Y)}
 
 			if i+1 < len(line) {
 				v1 := m.scaleOffset(m.Points[j][i+1].Vector())
-				pv1 := image.Point{X: int(v1.x), Y: int(v1.y)}
-				drawLine(img, pv, pv1, v1.color)
+				pv1 := image.Point{X: int(v1.X), Y: int(v1.Y)}
+				drawLine(img, pv, pv1, v1.Color)
 			}
 			if j+1 < len(m.Points) && i < len(m.Points[j+1]) {
 				v1 := m.scaleOffset(m.Points[j+1][i].Vector())
-				pv1 := image.Point{X: int(v1.x), Y: int(v1.y)}
-				drawLine(img, pv, pv1, v1.color)
+				pv1 := image.Point{X: int(v1.X), Y: int(v1.Y)}
+				drawLine(img, pv, pv1, v1.Color)
 			}
 
 		}
@@ -76,8 +77,8 @@ func newFdf(mapData []byte) (*Fdf, error) {
 	g.Points = m
 
 	g.depthScale = 1
-	g.cameraRotation.x = defaultXDeg
-	g.cameraRotation.z = defaultZDeg
+	g.cameraRotation.X = defaultXDeg
+	g.cameraRotation.Z = defaultZDeg
 
 	// bounds := g.getProjectedBounds(1)
 	// g.scale = getScale(bounds)
@@ -90,17 +91,17 @@ func newFdf(mapData []byte) (*Fdf, error) {
 	return g, nil
 }
 
-func (m *Fdf) toOffset(v vec3, offset image.Point) vec3 {
+func (m *Fdf) toOffset(v math3.Vec3, offset image.Point) math3.Vec3 {
 	nv := m.cartesianToIsometric(v)
-	return vec3{
-		x:     nv.x + float64(offset.X),
-		y:     nv.y + float64(offset.Y),
-		z:     nv.z,
-		color: nv.color,
+	return math3.Vec3{
+		X:     nv.X + float64(offset.X),
+		Y:     nv.Y + float64(offset.Y),
+		Z:     nv.Z,
+		Color: nv.Color,
 	}
 }
 
-func (m *Fdf) scaleOffset(v vec3) vec3 {
+func (m *Fdf) scaleOffset(v math3.Vec3) math3.Vec3 {
 	return m.toOffset(v.Scale(m.scale), m.offset)
 }
 
