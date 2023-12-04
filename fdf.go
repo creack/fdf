@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"image"
+	"image/color"
+	"image/draw"
 	"math"
 
 	"go.creack.net/fdf/math3"
@@ -20,7 +22,7 @@ type Fdf struct {
 
 // NewFdf loads/parses the map and creates a fdf engine.
 func NewFdf() (*Fdf, error) {
-	buf, err := mapData.ReadFile("maps/42.fdf")
+	buf, err := mapData.ReadFile("maps/t1.fdf")
 	if err != nil {
 		return nil, fmt.Errorf("fs readfile: %w", err)
 	}
@@ -75,6 +77,10 @@ func (m *Fdf) SetHeightFactor(f float64) { m.heightFactor = f }
 func (m *Fdf) Draw() image.Image {
 	bounds := m.getProjectedBounds()
 	img := image.NewRGBA(bounds)
+
+	// Add black background.
+	// Remove this to allow for transparency.
+	draw.Draw(img, img.Bounds(), image.NewUniform(color.Black), image.Point{}, draw.Over)
 
 	for y, line := range m.Points {
 		for x, elem := range line {

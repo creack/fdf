@@ -25,8 +25,10 @@ func New(fileName string, width, height int) render.Renderer {
 }
 
 func (r *renderer) Run(g render.Engine) error {
+	// Set the projection to isometric.
 	render.Iso(g, r.width, r.height)
 
+	// Render the wireframe.
 	fdfImg := g.Draw()
 
 	buf := bytes.NewBuffer(nil)

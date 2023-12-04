@@ -22,7 +22,7 @@ func main() {
 	}
 
 	if runtime.GOOS != "js" {
-		if err := pngrenderer.New("docs/42.png", 2050, 1100).Run(g); err != nil {
+		if err := pngrenderer.New("docs/t1.png", 2050, 1100).Run(g); err != nil {
 			log.Fatal(err)
 		}
 	}
