@@ -18,11 +18,11 @@ func main() {
 
 	g, err := NewFdf()
 	if err != nil {
-		log.Fatalf("NewGame: %s.", err)
+		log.Fatalf("NewFdf: %s.", err)
 	}
 
 	if runtime.GOOS != "js" {
-		if err := pngrenderer.New("foo.png", 2050, 1100).Run(g); err != nil {
+		if err := pngrenderer.New("docs/42.png", 2050, 1100).Run(g); err != nil {
 			log.Fatal(err)
 		}
 	}
