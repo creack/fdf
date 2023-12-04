@@ -1,32 +1,28 @@
 package math3
 
 import (
-	"image/color"
 	"math"
 )
 
 type Vec3 struct {
 	X, Y, Z float64
-	Color   color.Color
 }
 
 // Scale the vector by the given factor.
 func (v Vec3) Scale(scale float64) Vec3 {
 	return Vec3{
-		X:     v.X * scale,
-		Y:     v.Y * scale,
-		Z:     v.Z * scale,
-		Color: v.Color,
+		X: v.X * scale,
+		Y: v.Y * scale,
+		Z: v.Z * scale,
 	}
 }
 
 // Translate the vector.
 func (v Vec3) Translate(offset Vec3) Vec3 {
 	return Vec3{
-		X:     v.X + offset.X,
-		Y:     v.Y + offset.Y,
-		Z:     v.Z + offset.Z,
-		Color: v.Color,
+		X: v.X + offset.X,
+		Y: v.Y + offset.Y,
+		Z: v.Z + offset.Z,
 	}
 }
 
@@ -45,10 +41,9 @@ func (v Vec3) Rotate(angle Vec3) Vec3 {
 
 func (v Vec3) MultiplyMatrix(m matrix3) Vec3 {
 	return Vec3{
-		X:     v.X*m.i.X + v.Y*m.i.Y + v.Z*m.i.Z,
-		Y:     v.X*m.j.X + v.Y*m.j.Y + v.Z*m.j.Z,
-		Z:     v.X*m.k.X + v.Y*m.k.Y + v.Z*m.k.Z,
-		Color: v.Color,
+		X: v.X*m.i.X + v.Y*m.i.Y + v.Z*m.i.Z,
+		Y: v.X*m.j.X + v.Y*m.j.Y + v.Z*m.j.Z,
+		Z: v.X*m.k.X + v.Y*m.k.Y + v.Z*m.k.Z,
 	}
 }
 
@@ -72,7 +67,7 @@ func (m matrix3) Multiply(m2 matrix3) matrix3 {
 		{m2.i.Z, m2.j.Z, m2.k.Z},
 	}
 
-	// multiplying matrices and storing result
+	// Multiplying matrices and storing result.
 	for i := 0; i < 3; i++ {
 		for j := 0; j < 3; j++ {
 			var total float64

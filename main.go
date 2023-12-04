@@ -2,9 +2,7 @@ package main
 
 import (
 	"embed"
-	_ "embed"
 	"fmt"
-	_ "image/png"
 	"log"
 	"runtime"
 
@@ -29,6 +27,8 @@ func NewFdf() (*Fdf, error) {
 }
 
 func main() {
+	println("start")
+
 	g, err := NewFdf()
 	if err != nil {
 		log.Fatalf("NewGame: %s.", err)

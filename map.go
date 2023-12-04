@@ -9,8 +9,6 @@ import (
 	"fdf/math3"
 )
 
-// TODO: Consider moving this to the renderer.
-//
 //nolint:gochecknoglobals // Expected "readonly" global.
 var defaultColor = color.White
 
@@ -44,10 +42,12 @@ func parseMap(mapData []byte) ([][]MapPoint, error) {
 			}
 
 			p := MapPoint{
-				x:      x,
-				y:      y,
-				height: h,
-				color:  defaultColor,
+				Vec3: math3.Vec3{
+					X: float64(x),
+					Y: float64(y),
+					Z: float64(h),
+				},
+				color: defaultColor,
 			}
 
 			if len(parts) > 1 {
@@ -72,18 +72,15 @@ func parseMap(mapData []byte) ([][]MapPoint, error) {
 }
 
 type MapPoint struct {
-	x      int
-	y      int
-	height int
-	color  color.Color
+	math3.Vec3
+	color color.Color
 }
 
 // Vector returns the map point as a vec3.
 func (mp MapPoint) Vector() math3.Vec3 {
 	return math3.Vec3{
-		X:     float64(mp.x),
-		Y:     float64(mp.y),
-		Z:     float64(mp.height),
-		Color: mp.color,
+		X: float64(mp.X),
+		Y: float64(mp.Y),
+		Z: float64(mp.Z),
 	}
 }

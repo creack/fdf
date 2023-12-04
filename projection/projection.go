@@ -40,10 +40,9 @@ func NewDirect() Projection { return &direct{scale: 1} }
 
 func (d direct) Project(vec math3.Vec3) math3.Vec3 {
 	return math3.Vec3{
-		X:     vec.X + d.offset.X,
-		Y:     vec.Y + d.offset.Y,
-		Z:     vec.Z + d.offset.Z,
-		Color: vec.Color,
+		X: vec.X + d.offset.X,
+		Y: vec.Y + d.offset.Y,
+		Z: vec.Z + d.offset.Z,
 	}
 }
 

@@ -81,12 +81,12 @@ func (m *Fdf) Draw() image.Image {
 			if i+1 < len(line) {
 				v1 := m.projection.Project(m.Points[j][i+1].Vector())
 				pv1 := image.Point{X: int(v1.X), Y: int(v1.Y)}
-				drawLine(img, pv, pv1, v1.Color)
+				drawLine(img, pv, pv1, nil)
 			}
 			if j+1 < len(m.Points) && i < len(m.Points[j+1]) {
 				v1 := m.projection.Project(m.Points[j+1][i].Vector())
 				pv1 := image.Point{X: int(v1.X), Y: int(v1.Y)}
-				drawLine(img, pv, pv1, v1.Color)
+				drawLine(img, pv, pv1, nil)
 			}
 
 		}
