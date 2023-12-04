@@ -4,6 +4,7 @@ import (
 	"math"
 )
 
+// Vec is a 3d vector.
 type Vec struct {
 	X, Y, Z float64
 }
@@ -34,33 +35,35 @@ func (v Vec) Rotate(angle Vec) Vec {
 	return v
 }
 
+// MultiplyMatrix multiplies the given matrix with the current vector.
 func (v Vec) MultiplyMatrix(m Matrix) Vec {
 	return Vec{
-		X: v.X*m.i.X + v.Y*m.i.Y + v.Z*m.i.Z,
-		Y: v.X*m.j.X + v.Y*m.j.Y + v.Z*m.j.Z,
-		Z: v.X*m.k.X + v.Y*m.k.Y + v.Z*m.k.Z,
+		X: v.X*m[0][0] + v.Y*m[0][1] + v.Z*m[0][2],
+		Y: v.X*m[1][0] + v.Y*m[1][1] + v.Z*m[1][2],
+		Z: v.X*m[2][0] + v.Y*m[2][1] + v.Z*m[2][2],
 	}
 }
 
-// Matrix is a 3D matrix.
-type Matrix struct {
-	i, j, k Vec
-}
+// Matrix is a 3x3 matrix.
+type Matrix [3][3]float64
 
+// Multiply 2 3x3 matrices.
 func (m Matrix) Multiply(m2 Matrix) Matrix {
 	var result [3][3]float64
 
-	mA := [3][3]float64{
-		{m.i.X, m.j.X, m.k.X},
-		{m.i.Y, m.j.Y, m.k.Y},
-		{m.i.Z, m.j.Z, m.k.Z},
-	}
+	// mA := [3][3]float64{
+	// 	{m.i.X, m.j.X, m.k.X},
+	// 	{m.i.Y, m.j.Y, m.k.Y},
+	// 	{m.i.Z, m.j.Z, m.k.Z},
+	// }
 
-	mB := [3][3]float64{
-		{m2.i.X, m2.j.X, m2.k.X},
-		{m2.i.Y, m2.j.Y, m2.k.Y},
-		{m2.i.Z, m2.j.Z, m2.k.Z},
-	}
+	// mB := [3][3]float64{
+	// 	{m2.i.X, m2.j.X, m2.k.X},
+	// 	{m2.i.Y, m2.j.Y, m2.k.Y},
+	// 	{m2.i.Z, m2.j.Z, m2.k.Z},
+	// }
+	mA := m
+	mB := m2
 
 	// Multiplying matrices and storing result.
 	for i := 0; i < 3; i++ {
@@ -73,11 +76,12 @@ func (m Matrix) Multiply(m2 Matrix) Matrix {
 			result[i][j] = total
 		}
 	}
-	return Matrix{
-		i: Vec{X: result[0][0], Y: result[0][1], Z: result[0][2]},
-		j: Vec{X: result[1][0], Y: result[1][1], Z: result[1][2]},
-		k: Vec{X: result[2][0], Y: result[2][1], Z: result[2][2]},
-	}
+	return Matrix(result)
+	// return Matrix{
+	// 	i: Vec{X: result[0][0], Y: result[0][1], Z: result[0][2]},
+	// 	j: Vec{X: result[1][0], Y: result[1][1], Z: result[1][2]},
+	// 	k: Vec{X: result[2][0], Y: result[2][1], Z: result[2][2]},
+	// }
 }
 
 // Axis enum type.
@@ -91,61 +95,29 @@ const (
 	AxisZ
 )
 
+// Ref: https://en.wikipedia.org/wiki/Rotation_matrix#Basic_3D_rotations.
 func GetRotationMatrix(deg float64, axis Axis) Matrix {
+	c := math.Cos(deg)
+	s := math.Sin(deg)
+
 	switch axis {
 	case AxisX:
 		return Matrix{
-			i: Vec{
-				X: 1,
-				Y: 0,
-				Z: 0,
-			},
-			j: Vec{
-				X: 0,
-				Y: math.Cos(deg),
-				Z: math.Sin(deg),
-			},
-			k: Vec{
-				X: 0,
-				Y: -math.Sin(deg),
-				Z: math.Cos(deg),
-			},
+			{1, 0, 0},
+			{0, c, -s},
+			{0, s, c},
 		}
 	case AxisY:
 		return Matrix{
-			i: Vec{
-				X: math.Cos(deg),
-				Y: 0,
-				Z: -math.Sin(deg),
-			},
-			j: Vec{
-				X: 0,
-				Y: 1,
-				Z: 0,
-			},
-			k: Vec{
-				X: math.Sin(deg),
-				Y: 0,
-				Z: math.Cos(deg),
-			},
+			{c, -s, 0},
+			{0, 1, 0},
+			{-s, 0, c},
 		}
 	case AxisZ:
 		return Matrix{
-			i: Vec{
-				X: math.Cos(deg),
-				Y: math.Sin(deg),
-				Z: 0,
-			},
-			j: Vec{
-				X: -math.Sin(deg),
-				Y: math.Cos(deg),
-				Z: 0,
-			},
-			k: Vec{
-				X: 0,
-				Y: 0,
-				Z: 1,
-			},
+			{c, -s, 0},
+			{s, c, 0},
+			{0, 0, 1},
 		}
 	default:
 		panic("invalid axis")
