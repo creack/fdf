@@ -5,8 +5,8 @@ import (
 	"image"
 	"math"
 
-	"github.com/creack/fdf/math3"
-	"github.com/creack/fdf/projection"
+	"go.creack.net/fdf/math3"
+	"go.creack.net/fdf/projection"
 )
 
 // Fdf reprensents the main engine to draw wireframes.

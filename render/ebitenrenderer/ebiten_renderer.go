@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"image"
 
-	"github.com/creack/fdf/math3"
-	"github.com/creack/fdf/projection"
-	"github.com/creack/fdf/render"
+	"go.creack.net/fdf/math3"
+	"go.creack.net/fdf/projection"
+	"go.creack.net/fdf/render"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"

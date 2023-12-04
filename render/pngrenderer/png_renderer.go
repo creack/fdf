@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/creack/fdf/render"
+	"go.creack.net/fdf/render"
 )
 
 type renderer struct {

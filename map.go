@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/creack/fdf/math3"
+	"go.creack.net/fdf/math3"
 )
 
 //nolint:gochecknoglobals // Expected "readonly" global.

@@ -3,7 +3,7 @@ package render
 import (
 	"image"
 
-	"github.com/creack/fdf/projection"
+	"go.creack.net/fdf/projection"
 )
 
 // Renderer defines what a renderer can do.

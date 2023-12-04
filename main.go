@@ -6,8 +6,8 @@ import (
 	"log"
 	"runtime"
 
-	"github.com/creack/fdf/render/ebitenrenderer"
-	"github.com/creack/fdf/render/pngrenderer"
+	"go.creack.net/fdf/render/ebitenrenderer"
+	"go.creack.net/fdf/render/pngrenderer"
 )
 
 //go:embed maps/*.fdf
