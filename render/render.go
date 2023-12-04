@@ -1,3 +1,4 @@
+// Package render provides the interfaces for the various renderers.
 package render
 
 import (

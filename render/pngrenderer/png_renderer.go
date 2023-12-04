@@ -1,7 +1,9 @@
+// Package pngrenderer provides a stdlib image/png impementation of the renderer.
 package pngrenderer
 
 import (
 	"bytes"
+	"fmt"
 	"image/png"
 	"log"
 	"os"
@@ -16,6 +18,7 @@ type renderer struct {
 	height int
 }
 
+// New creates the renderer.
 func New(fileName string, width, height int) render.Renderer {
 	return &renderer{
 		fileName: fileName,
@@ -24,6 +27,7 @@ func New(fileName string, width, height int) render.Renderer {
 	}
 }
 
+// Run implements the interface.
 func (r *renderer) Run(g render.Engine) error {
 	// Set the projection to isometric.
 	render.Iso(g, r.width, r.height)
@@ -33,9 +37,9 @@ func (r *renderer) Run(g render.Engine) error {
 
 	buf := bytes.NewBuffer(nil)
 	if err := png.Encode(buf, fdfImg); err != nil {
-		log.Fatalf("Encode png: %s.", err)
+		return fmt.Errorf("png.Encode: %w", err)
 	}
-	if err := os.WriteFile(r.fileName, buf.Bytes(), 0o644); err != nil {
+	if err := os.WriteFile(r.fileName, buf.Bytes(), 0o600); err != nil {
 		log.Fatalf("Write file: %s.", err)
 	}
 

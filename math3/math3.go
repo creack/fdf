@@ -1,3 +1,4 @@
+// Package math3 provides basic 3D math utils.
 package math3
 
 import (
@@ -64,7 +65,7 @@ func (m Matrix) Multiply(m2 Matrix) Matrix {
 	for i := 0; i < 3; i++ {
 		for j := 0; j < 3; j++ {
 			for k := 0; k < 3; k++ {
-				result[i][k] += m[i][k] * m2[k][j]
+				result[i][j] += m[i][k] * m2[k][j]
 			}
 		}
 	}
@@ -82,11 +83,14 @@ const (
 	AxisZ
 )
 
+// GetRotationMatrix returns the populated matrix to rotate along the given axis.
+//
 // Ref: https://en.wikipedia.org/wiki/Rotation_matrix#Basic_3D_rotations.
 func GetRotationMatrix(deg float64, axis Axis) Matrix {
 	c := math.Cos(deg)
 	s := math.Sin(deg)
 
+	//nolint:exhaustive // False positive.
 	switch axis {
 	case AxisX:
 		return Matrix{

@@ -1,21 +1,25 @@
-package math3
+package math3_test
 
 import (
 	"testing"
+
+	"go.creack.net/fdf/math3"
 )
 
 func TestMatMul(t *testing.T) {
-	m1 := Matrix{
+	t.Parallel()
+
+	m1 := math3.Matrix{
 		{2, 3, 4},
 		{3, 5, 6},
 		{4, 5, 3},
 	}
-	m2 := Matrix{
+	m2 := math3.Matrix{
 		{1, 2, 1},
 		{-1, 2, 1},
 		{3, 2, 1},
 	}
-	expected := Matrix{
+	expected := math3.Matrix{
 		{11, 18, 9},
 		{16, 28, 14},
 		{8, 24, 12},

@@ -1,3 +1,4 @@
+// Package ebitenrenderer provides a ebiten impementation of the renderer.
 package ebitenrenderer
 
 import (
@@ -13,6 +14,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
+// Game holds the state.
 type Game struct {
 	keys []ebiten.Key
 
@@ -25,6 +27,9 @@ type Game struct {
 	tainted bool // Flag to know when to redraw img.
 }
 
+// Update implements the ebiten interface.
+//
+// Handles key presses.
 func (g *Game) Update() error {
 	g.keys = inpututil.AppendPressedKeys(g.keys[:0])
 
@@ -40,6 +45,7 @@ func (g *Game) handleFdfKeys(keys []ebiten.Key) {
 
 loop:
 	for _, k := range keys {
+		//nolint:exhaustive // False positive.
 		switch k {
 		case ebiten.KeyW:
 			g.offset.Y -= scale
@@ -51,6 +57,7 @@ loop:
 			g.offset.X += scale
 		}
 
+		//nolint:exhaustive // False positive.
 		switch k {
 		// Height factor.
 		case ebiten.Key1:
@@ -64,7 +71,7 @@ loop:
 		case ebiten.Key4:
 			scale--
 
-			// Rotations.
+		// Rotations.
 		case ebiten.KeyUp:
 			angle = angle.Translate(math3.Vec{X: 0.01})
 		case ebiten.KeyDown:
@@ -78,7 +85,7 @@ loop:
 		case ebiten.KeyShiftLeft:
 			angle = angle.Translate(math3.Vec{Z: -0.01})
 
-			// Misc.
+		// Misc.
 		case ebiten.Key0: // Set all angles to 0.
 			angle = math3.Vec{}
 		case ebiten.KeyI:
@@ -96,6 +103,9 @@ loop:
 	}
 }
 
+// Draw implements the ebiten.Game interface.
+//
+// Draws the rendered wireframe on screen.
 func (g *Game) Draw(screen *ebiten.Image) {
 	// Get the screen size.
 	screenWidth, screenHeight := screen.Bounds().Dx(), screen.Bounds().Dy()
@@ -147,12 +157,12 @@ Camera:
 	ebitenutil.DebugPrintAt(screen, msg, screenWidth-150, 1)
 }
 
-func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
-	return outsideWidth, outsideHeight
-}
+// Layout implements the ebiten.Game interface.
+func (g *Game) Layout(outsideWidth, outsideHeight int) (w, h int) { return outsideWidth, outsideHeight }
 
 type renderer struct{}
 
+// New creates the renderer.
 func New(initialWidth, initialHeight int) render.Renderer {
 	ebiten.SetWindowSize(initialWidth*2, initialHeight*2)
 	ebiten.SetWindowTitle("FDF")
