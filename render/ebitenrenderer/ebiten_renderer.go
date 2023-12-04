@@ -153,8 +153,8 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 
 type renderer struct{}
 
-func New(width, height int) render.Renderer {
-	ebiten.SetWindowSize(width*2, height*2)
+func New(initialWidth, initialHeight int) render.Renderer {
+	ebiten.SetWindowSize(initialWidth*2, initialHeight*2)
 	ebiten.SetWindowTitle("FDF")
 	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
 

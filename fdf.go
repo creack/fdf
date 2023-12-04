@@ -21,8 +21,8 @@ type Fdf struct {
 }
 
 // NewFdf loads/parses the map and creates a fdf engine.
-func NewFdf() (*Fdf, error) {
-	buf, err := mapData.ReadFile("maps/t1.fdf")
+func NewFdf(source string) (*Fdf, error) {
+	buf, err := mapData.ReadFile(source)
 	if err != nil {
 		return nil, fmt.Errorf("fs readfile: %w", err)
 	}
