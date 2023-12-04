@@ -9,8 +9,8 @@ import (
 
 //nolint:gochecknoglobals // Expected "readonly" globals.
 var (
-	defaultXDeg float64 = math.Atan(math.Sqrt2)
-	defaultZDeg float64 = 45 * math.Pi / 180
+	defaultXDeg float64 = 1
+	defaultZDeg float64 = 0.5
 
 	defaultCameraRotation = math3.Vec{
 		X: defaultXDeg,

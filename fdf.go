@@ -14,32 +14,27 @@ type Fdf struct {
 
 	bounds     image.Rectangle
 	projection projection.Projection
+
+	heightFactor float64
 }
 
-func newFdf(mapData []byte) (*Fdf, error) {
-	g := &Fdf{
-		projection: projection.NewDirect(),
+func NewFdf() (*Fdf, error) {
+	buf, err := mapData.ReadFile("maps/42.fdf")
+	if err != nil {
+		return nil, fmt.Errorf("fs readfile: %w", err)
 	}
 
-	m, err := parseMap(mapData)
+	g := &Fdf{
+		projection:   projection.NewDirect(),
+		heightFactor: 1,
+	}
+
+	m, err := parseMap(buf)
 	if err != nil {
 		return nil, fmt.Errorf("parseMap: %w", err)
 	}
 	g.Points = m
 
-	// g.depthScale = 1
-	// g.cameraRotation.X = defaultXDeg
-	// g.cameraRotation.Z = defaultZDeg
-
-	// bounds := g.getProjectedBounds(1)
-	// g.scale = getScale(bounds)
-	// bounds = g.getProjectedBounds(g.scale)
-	// g.offset = getOffset(WIDTH, HEIGHT, bounds)
-	// fmt.Printf("%f - %d/%d\n", g.scale, g.offset.X, g.offset.Y)
-	// g.scale = 42
-	// g.offset.X = 100
-	// g.offset.Y = 100
-	// g.projection = projection.NewIsomorphic(int(g.scale), g.offset, g.cameraRotation)
 	return g, nil
 }
 
@@ -66,26 +61,32 @@ func (m *Fdf) SetProjection(p projection.Projection) image.Rectangle {
 	return m.bounds
 }
 
-func (m *Fdf) Draw() image.Image {
-	m.bounds = m.getProjectedBounds()
-	img := image.NewRGBA(m.bounds)
+func (m *Fdf) GetHeightFactor() float64  { return m.heightFactor }
+func (m *Fdf) SetHeightFactor(f float64) { m.heightFactor = f }
 
-	// Draw a transparent blue overlay on the whole fdf image.
-	// draw.Draw(img, img.Bounds(), image.NewUniform(color.RGBA{A: 100, B: 200, G: 50}), image.Point{}, draw.Over)
+func (m *Fdf) Draw() image.Image {
+	if m.bounds == (image.Rectangle{}) {
+		m.bounds = m.getProjectedBounds()
+	}
+	img := image.NewRGBA(m.bounds)
 
 	for j, line := range m.Points {
 		for i, elem := range line {
+			elem.Z *= m.heightFactor // Note: elem is a copy. Safe to mutate.
+
 			v := m.projection.Project(elem.Vec)
 			pv := image.Point{X: int(v.X), Y: int(v.Y)}
 
 			if i+1 < len(line) {
 				elem1 := m.Points[j][i+1]
+				elem1.Z *= m.heightFactor
 				v1 := m.projection.Project(elem1.Vec)
 				pv1 := image.Point{X: int(v1.X), Y: int(v1.Y)}
 				drawLine(img, pv, pv1, elem.color, elem1.color)
 			}
 			if j+1 < len(m.Points) && i < len(m.Points[j+1]) {
 				elem1 := m.Points[j+1][i]
+				elem1.Z *= m.heightFactor
 				v1 := m.projection.Project(elem1.Vec)
 				pv1 := image.Point{X: int(v1.X), Y: int(v1.Y)}
 				drawLine(img, pv, pv1, elem.color, elem1.color)

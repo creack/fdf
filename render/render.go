@@ -6,6 +6,7 @@ import (
 	"fdf/projection"
 )
 
+// Renderer defines what a renderer can do.
 type Renderer interface {
 	Run(Engine) error
 }
@@ -14,31 +15,29 @@ type Renderer interface {
 type Engine interface {
 	SetProjection(projection.Projection) image.Rectangle
 	GetProjection() projection.Projection
+
+	GetHeightFactor() float64
+	SetHeightFactor(float64)
+
 	Draw() image.Image
 }
 
+// Iso is a helper function to initialize an isomorphic projection.
 func Iso(fdf Engine, screenWidth, screenHeight int) image.Rectangle {
-	return fdf.SetProjection(
-		projection.NewIsomorphic(
-			projection.GetScale(
-				screenHeight,
-				screenWidth,
-				fdf.SetProjection(
-					projection.NewIsomorphic(1),
-				),
-			),
-		),
-	)
+	// Initialize a projection with scale 1 to get base boundaries.
+	p := projection.NewIsomorphic(1)
+
+	// Set the projection on the engine, returns the initial bounds.
+	bounds := fdf.SetProjection(p)
+
+	// Compute the scale from the initial bounds.
+	scale := projection.GetScale(screenHeight, screenWidth, bounds)
+
+	// Create the final projection with the new scale.
+	p = projection.NewIsomorphic(scale)
+
+	// Set the projection on the engine, returns the final bounds.
+	bounds = fdf.SetProjection(p)
+
+	return bounds
 }
-
-// // StubEngine implements the Renderer interface with no-op methods.
-// type StubEngine struct{}
-
-// // Draw implements the interface.
-// func (StubEngine) Draw() image.Image { return nil }
-
-// // IncScale implements the interface.
-// func (StubEngine) IncScale(float64) {}
-
-// // SetScale implements the interface.
-// func (StubEngine) SetScale(float64) {}

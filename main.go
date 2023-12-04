@@ -2,7 +2,6 @@ package main
 
 import (
 	"embed"
-	"fmt"
 	"log"
 	"runtime"
 
@@ -12,19 +11,6 @@ import (
 
 //go:embed maps/*.fdf
 var mapData embed.FS
-
-func NewFdf() (*Fdf, error) {
-	buf, err := mapData.ReadFile("maps/42.fdf")
-	if err != nil {
-		return nil, fmt.Errorf("fs readfile: %w", err)
-	}
-
-	m, err := newFdf(buf)
-	if err != nil {
-		return nil, fmt.Errorf("loadMap: %w", err)
-	}
-	return m, nil
-}
 
 func main() {
 	println("start")
