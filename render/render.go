@@ -13,7 +13,22 @@ type Renderer interface {
 // Engine defines the possible methods to interract from the Renderer to the Engine.
 type Engine interface {
 	SetProjection(projection.Projection) image.Rectangle
+	GetProjection() projection.Projection
 	Draw() image.Image
+}
+
+func Iso(fdf Engine, screenWidth, screenHeight int) image.Rectangle {
+	return fdf.SetProjection(
+		projection.NewIsomorphic(
+			projection.GetScale(
+				screenHeight,
+				screenWidth,
+				fdf.SetProjection(
+					projection.NewIsomorphic(1),
+				),
+			),
+		),
+	)
 }
 
 // // StubEngine implements the Renderer interface with no-op methods.

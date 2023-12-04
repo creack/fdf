@@ -9,8 +9,8 @@ import (
 
 //nolint:gochecknoglobals // Expected "readonly" globals.
 var (
-	defaultXDeg float64 = math.Atan(math.Sqrt2)
-	defaultZDeg float64 = 45
+	defaultXDeg float64 = -math.Atan(math.Sqrt2)
+	defaultZDeg float64 = -45 * math.Pi / 180
 
 	defaultCameraRotation = math3.Vec3{
 		X: defaultXDeg,
@@ -21,14 +21,22 @@ var (
 // Projection defines how to project the given 3d point.
 type Projection interface {
 	Project(math3.Vec3) math3.Vec3
-	SetOffset(offset math3.Vec3)
+
+	SetOffset(math3.Vec3)
+
+	GetScale() float64
+	SetScale(float64)
+
+	GetAngle() math3.Vec3
+	SetAngle(math3.Vec3)
 }
 
 type direct struct {
 	offset math3.Vec3
+	scale  float64
 }
 
-func NewDirect() Projection { return &direct{} }
+func NewDirect() Projection { return &direct{scale: 1} }
 
 func (d direct) Project(vec math3.Vec3) math3.Vec3 {
 	return math3.Vec3{
@@ -42,6 +50,14 @@ func (d direct) Project(vec math3.Vec3) math3.Vec3 {
 func (d *direct) SetOffset(offset math3.Vec3) {
 	d.offset = offset
 }
+
+func (d direct) GetScale() float64 { return d.scale }
+
+func (d *direct) SetScale(s float64) { d.scale = s }
+
+func (direct) GetAngle() math3.Vec3 { return math3.Vec3{} }
+
+func (*direct) SetAngle(math3.Vec3) {}
 
 // isomorphic projection.
 type isomorphic struct {
@@ -59,6 +75,22 @@ func NewIsomorphic(scale int) Projection {
 	}
 }
 
+func (i *isomorphic) SetScale(s float64) {
+	// Clamp.
+	if s < 2 {
+		s = 2
+	} else if s > 100 {
+		s = 100
+	}
+	i.scale = int(s)
+}
+
+func (i isomorphic) GetScale() float64 { return float64(i.scale) }
+
+func (i isomorphic) GetAngle() math3.Vec3 { return i.cameraRotation }
+
+func (i *isomorphic) SetAngle(ang math3.Vec3) { i.cameraRotation = ang }
+
 func (i *isomorphic) SetOffset(offset math3.Vec3) {
 	i.offset = offset
 }
@@ -68,19 +100,13 @@ func (i isomorphic) Project(vec math3.Vec3) math3.Vec3 {
 	vec = vec.Scale(float64(i.scale))
 
 	// Then rotate.
-	vec = vec.MultiplyMatrix(math3.GetRotationMatrix(i.cameraRotation.Z, math3.AxisZ))
-	vec = vec.MultiplyMatrix(math3.GetRotationMatrix(i.cameraRotation.X, math3.AxisX))
-	vec = vec.MultiplyMatrix(math3.GetRotationMatrix(i.cameraRotation.Y, math3.AxisY))
+	vec = vec.Rotate(i.cameraRotation)
 
 	// Then translate.
-	return math3.Vec3{
-		X:     vec.X + i.offset.X,
-		Y:     vec.Y + i.offset.Y,
-		Z:     vec.Z + i.offset.Z,
-		Color: vec.Color,
-	}
+	return vec.Translate(i.offset)
 }
 
+// GetScale returns the scale factor to fit bounds in the given screen size.
 func GetScale(screenWidth, screenHeight int, bounds image.Rectangle) int {
 	width := bounds.Dx()
 	height := bounds.Dy()

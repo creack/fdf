@@ -6,7 +6,6 @@ import (
 	"log"
 	"os"
 
-	"fdf/projection"
 	"fdf/render"
 )
 
@@ -26,7 +25,7 @@ func New(fileName string, width, height int) render.Renderer {
 }
 
 func (r *renderer) Run(g render.Engine) error {
-	g.SetProjection(projection.NewIsomorphic(projection.GetScale(r.width, r.height, g.SetProjection(projection.NewIsomorphic(1)))))
+	render.Iso(g, r.width, r.height)
 
 	fdfImg := g.Draw()
 

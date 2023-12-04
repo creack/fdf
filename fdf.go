@@ -5,6 +5,7 @@ import (
 	"image"
 	"math"
 
+	"fdf/math3"
 	"fdf/projection"
 )
 
@@ -42,15 +43,35 @@ func newFdf(mapData []byte) (*Fdf, error) {
 	return g, nil
 }
 
+func (m *Fdf) GetProjection() projection.Projection { return m.projection }
+
 func (m *Fdf) SetProjection(p projection.Projection) image.Rectangle {
 	m.projection = p
 	// Process the new bounds and return them.
 	m.bounds = m.getProjectedBounds()
+
+	var offset math3.Vec3
+	if m.bounds.Min.X <= 0 {
+		offset.X = float64(-m.bounds.Min.X)
+		m.bounds.Max.X += -m.bounds.Min.X
+		m.bounds.Min.X = 0
+	}
+	if m.bounds.Min.Y <= 0 {
+		offset.Y = float64(-m.bounds.Min.Y)
+		m.bounds.Max.Y += -m.bounds.Min.Y
+		m.bounds.Min.Y = 0
+	}
+	m.projection.SetOffset(offset)
+
 	return m.bounds
 }
 
 func (m *Fdf) Draw() image.Image {
+	m.bounds = m.getProjectedBounds()
 	img := image.NewRGBA(m.bounds)
+
+	// Draw a transparent blue overlay on the whole fdf image.
+	// draw.Draw(img, img.Bounds(), image.NewUniform(color.RGBA{A: 100, B: 200, G: 50}), image.Point{}, draw.Over)
 
 	for j, line := range m.Points {
 		for i, elem := range line {
@@ -60,9 +81,6 @@ func (m *Fdf) Draw() image.Image {
 			if i+1 < len(line) {
 				v1 := m.projection.Project(m.Points[j][i+1].Vector())
 				pv1 := image.Point{X: int(v1.X), Y: int(v1.Y)}
-				if i == 0 && j == 0 {
-					fmt.Printf("%v // %v\n", pv, pv1)
-				}
 				drawLine(img, pv, pv1, v1.Color)
 			}
 			if j+1 < len(m.Points) && i < len(m.Points[j+1]) {

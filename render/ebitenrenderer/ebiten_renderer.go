@@ -2,21 +2,24 @@ package ebitenrenderer
 
 import (
 	"fmt"
-	"image/color"
+	"image"
 
+	"fdf/math3"
 	"fdf/projection"
 	"fdf/render"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
-	"github.com/hajimehoshi/ebiten/v2/vector"
 )
 
 type Game struct {
 	keys []ebiten.Key
 
 	fdf render.Engine
+
+	offset math3.Vec3
+	img    image.Image
 }
 
 func (g *Game) Update() error {
@@ -27,6 +30,10 @@ func (g *Game) Update() error {
 }
 
 func (g *Game) handleFdfKeys(keys []ebiten.Key) {
+	p := g.fdf.GetProjection()
+	scale := p.GetScale()
+	angle := p.GetAngle()
+
 	for _, k := range keys {
 		switch k {
 		// case ebiten.Key1:
@@ -34,27 +41,47 @@ func (g *Game) handleFdfKeys(keys []ebiten.Key) {
 		// case ebiten.Key2:
 		// 	m.depthChange += 0.1
 		case ebiten.Key3:
-			// g.fdf.IncScale(1)
+			scale++
+			p.SetScale(scale)
+			// g.fdf.SetProjection(p)
+			// g.img = g.fdf.Draw()
 		case ebiten.Key4:
-			// g.fdf.IncScale(-1)
+			scale--
+			p.SetScale(scale)
+			// g.fdf.SetProjection(p)
+			// g.img = g.fdf.Draw()
 
-			// case ebiten.KeyUp:
-			// 	m.deg.x += 0.01
-			// case ebiten.KeyDown:
-			// 	m.deg.x -= 0.01
-			// case ebiten.KeyRight:
-			// 	m.deg.y += 0.01
-			// case ebiten.KeyLeft:
-			// 	m.deg.y -= 0.01
+		case ebiten.KeyUp:
+			angle = angle.Translate(math3.Vec3{X: 0.01})
+			p.SetAngle(angle)
+		case ebiten.KeyDown:
+			angle = angle.Translate(math3.Vec3{X: -0.01})
+			p.SetAngle(angle)
+		case ebiten.KeyRight:
+			angle = angle.Translate(math3.Vec3{Y: 0.01})
+			p.SetAngle(angle)
+		case ebiten.KeyLeft:
+			angle = angle.Translate(math3.Vec3{Y: -0.01})
+			p.SetAngle(angle)
+		case ebiten.KeyShiftRight:
+			angle = angle.Translate(math3.Vec3{Z: 0.01})
+			p.SetAngle(angle)
+		case ebiten.KeyShiftLeft:
+			angle = angle.Translate(math3.Vec3{Z: -0.01})
+			p.SetAngle(angle)
 
-			// case ebiten.KeyW:
-			// 	m.offset.Y -= int(m.scale)
-			// case ebiten.KeyS:
-			// 	m.offset.Y += int(m.scale)
-			// case ebiten.KeyA:
-			// 	m.offset.X -= int(m.scale)
-			// case ebiten.KeyD:
-			// 	m.offset.X += int(m.scale)
+		case ebiten.Key0:
+			angle = math3.Vec3{}
+			p.SetAngle(angle)
+
+		case ebiten.KeyW:
+			g.offset.Y -= scale
+		case ebiten.KeyS:
+			g.offset.Y += scale
+		case ebiten.KeyA:
+			g.offset.X -= scale
+		case ebiten.KeyD:
+			g.offset.X += scale
 		}
 	}
 }
@@ -63,33 +90,42 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	// Get the screen size.
 	screenWidth, screenHeight := screen.Bounds().Dx(), screen.Bounds().Dy()
 
-	// Set the isometric projection.
-	bounds := g.fdf.SetProjection(projection.NewIsomorphic(projection.GetScale(screenWidth, screenHeight, g.fdf.SetProjection(projection.NewIsomorphic(1)))))
+	if g.img == nil {
+		// Set the isometric projection.
+		render.Iso(g.fdf, screenWidth, screenHeight)
+	}
 
-	vector.StrokeRect(screen, float32(bounds.Min.X), float32(bounds.Min.Y), float32(bounds.Max.X), float32(bounds.Max.Y), 2, color.RGBA{A: 255, R: 255}, false)
+	// Render the fdf.
+	g.img = g.fdf.Draw()
 
-	// NOTE: NewImageFromImage automatically fits the image back into 0,0 origin.
-	fdfImg := ebiten.NewImageFromImage(g.fdf.Draw())
-	bounds = fdfImg.Bounds()
-
-	vector.StrokeRect(screen, 1, 1, float32(screenWidth-2), float32(screenHeight-2), 2, color.White, false)
-
-	vector.StrokeRect(fdfImg, float32(bounds.Min.X), float32(bounds.Min.Y), float32(bounds.Max.X), float32(bounds.Max.Y), 2, color.RGBA{A: 255, B: 255}, false)
-
+	// Draw the rendered image on the screen.
 	op := &ebiten.DrawImageOptions{}
-	offset := projection.GetOffsetCenter(screenWidth, screenHeight, bounds)
-	op.GeoM.Translate(float64(offset.X), float64(offset.Y))
-	screen.DrawImage(fdfImg, op)
+	// Translate to center.
+	centerOffset := projection.GetOffsetCenter(screenWidth, screenHeight, g.img.Bounds())
+	op.GeoM.Translate(float64(centerOffset.X), float64(centerOffset.Y))
+	// Translate to local offset (controlled by keyboard).
+	op.GeoM.Translate(g.offset.X, g.offset.Y)
+
+	screen.DrawImage(ebiten.NewImageFromImage(g.img), op)
 
 	msg := fmt.Sprintf(`TPS: %0.2f
 FPS: %0.2f
 Sizes:
   - Screen: %d/%d
-  - Fdf: %v
+  - Bounds: %v
+  - Scale: %0.2f
+Camera:
+ - %0.2f
+ - %0.2f
+ - %0.2f
 `, ebiten.ActualTPS(),
 		ebiten.ActualFPS(),
 		screenWidth, screenHeight,
-		bounds,
+		g.img.Bounds(),
+		g.fdf.GetProjection().GetScale(),
+		g.fdf.GetProjection().GetAngle().X,
+		g.fdf.GetProjection().GetAngle().Y,
+		g.fdf.GetProjection().GetAngle().Z,
 	)
 	ebitenutil.DebugPrintAt(screen, msg, screenWidth-150, 1)
 }

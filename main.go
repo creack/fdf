@@ -40,7 +40,7 @@ func main() {
 		}
 	}
 
-	if err := ebitenrenderer.New(1024, 1024).Run(g); err != nil {
+	if err := ebitenrenderer.New(300, 300).Run(g); err != nil {
 		log.Fatal(err)
 	}
 }
