@@ -2,7 +2,7 @@
 
 Wireframe visualizer
 
-Two renderer are available: `png` to create an image file and [ebitengine](https://github.com/hajimehoshi)
+Two renderer are available: `png` to create an image file and [ebitengine](https://github.com/hajimehoshi/ebiten)
 which in turn can render as a native window or as a WASM website.
 
 ## Window mode
