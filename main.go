@@ -1,3 +1,4 @@
+// Package main is the entrypoint.
 package main
 
 import (
@@ -5,8 +6,8 @@ import (
 	"log"
 	"runtime"
 
-	"fdf/render/ebitenrenderer"
-	"fdf/render/pngrenderer"
+	"github.com/creack/fdf/render/ebitenrenderer"
+	"github.com/creack/fdf/render/pngrenderer"
 )
 
 //go:embed maps/*.fdf

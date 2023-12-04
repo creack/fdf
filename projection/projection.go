@@ -4,7 +4,7 @@ import (
 	"image"
 	"math"
 
-	"fdf/math3"
+	"github.com/creack/fdf/math3"
 )
 
 //nolint:gochecknoglobals // Expected "readonly" globals.
@@ -96,7 +96,7 @@ func (i *isomorphic) SetOffset(offset math3.Vec) {
 
 func (i isomorphic) Project(vec math3.Vec) math3.Vec {
 	// First scale the vector.
-	vec = vec.Scale(float64(i.scale))
+	vec = vec.ScaleAll(float64(i.scale))
 
 	// Then rotate.
 	vec = vec.Rotate(i.cameraRotation)

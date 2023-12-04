@@ -1,4 +1,4 @@
-module fdf
+module github.com/creack/fdf
 
 go 1.21.4
 

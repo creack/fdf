@@ -24,7 +24,7 @@ func drawLineHoriz(dst *image.RGBA, p0, p1 image.Point, col1, col2 color.Color) 
 	}
 
 	// Dims.
-	dx, dy := int(p1.X-p0.X), int(p1.Y-p0.Y)
+	dx, dy := p1.X-p0.X, p1.Y-p0.Y
 
 	// Other axis direction.
 	yDir := 1
@@ -35,7 +35,7 @@ func drawLineHoriz(dst *image.RGBA, p0, p1 image.Point, col1, col2 color.Color) 
 
 	d := 2*dy - dx
 	for x, y := p0.X, p0.Y; x <= p1.X; x++ {
-		dst.Set(int(x), int(y), lookupGradient(col1, col2, p0, p1, x, y))
+		dst.Set(x, y, lookupGradient(col1, col2, p0, p1, x, y))
 		if d > 0 {
 			y += yDir
 			d += -2 * dx
@@ -52,7 +52,7 @@ func drawLineVert(dst *image.RGBA, p0, p1 image.Point, col1, col2 color.Color) {
 	}
 
 	// Dims.
-	dx, dy := int(p1.X-p0.X), int(p1.Y-p0.Y)
+	dx, dy := p1.X-p0.X, p1.Y-p0.Y
 
 	// Other axis direction.
 	xDir := 1
@@ -63,7 +63,7 @@ func drawLineVert(dst *image.RGBA, p0, p1 image.Point, col1, col2 color.Color) {
 
 	d := 2*dx - dy
 	for x, y := p0.X, p0.Y; y <= p1.Y; y++ {
-		dst.Set(int(x), int(y), lookupGradient(col1, col2, p0, p1, x, y))
+		dst.Set(x, y, lookupGradient(col1, col2, p0, p1, x, y))
 		if d > 0 {
 			x += xDir
 			d += -2 * dy

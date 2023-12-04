@@ -9,11 +9,20 @@ type Vec struct {
 	X, Y, Z float64
 }
 
-// Scale the vector by the given factor.
-func (v Vec) Scale(scale float64) Vec {
+// ScaleAll the vector by the given factor.
+func (v Vec) ScaleAll(scale float64) Vec {
 	return Vec{
 		X: v.X * scale,
 		Y: v.Y * scale,
+		Z: v.Z * scale,
+	}
+}
+
+// ScaleZ scales only Z.
+func (v Vec) ScaleZ(scale float64) Vec {
+	return Vec{
+		X: v.X,
+		Y: v.Y,
 		Z: v.Z * scale,
 	}
 }

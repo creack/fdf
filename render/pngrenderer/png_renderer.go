@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 
-	"fdf/render"
+	"github.com/creack/fdf/render"
 )
 
 type renderer struct {
