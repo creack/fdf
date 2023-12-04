@@ -50,7 +50,7 @@ func (m *Fdf) SetProjection(p projection.Projection) image.Rectangle {
 	// Process the new bounds and return them.
 	m.bounds = m.getProjectedBounds()
 
-	var offset math3.Vec3
+	var offset math3.Vec
 	if m.bounds.Min.X <= 0 {
 		offset.X = float64(-m.bounds.Min.X)
 		m.bounds.Max.X += -m.bounds.Min.X
@@ -75,18 +75,20 @@ func (m *Fdf) Draw() image.Image {
 
 	for j, line := range m.Points {
 		for i, elem := range line {
-			v := m.projection.Project(elem.Vector())
+			v := m.projection.Project(elem.Vec)
 			pv := image.Point{X: int(v.X), Y: int(v.Y)}
 
 			if i+1 < len(line) {
-				v1 := m.projection.Project(m.Points[j][i+1].Vector())
+				elem1 := m.Points[j][i+1]
+				v1 := m.projection.Project(elem1.Vec)
 				pv1 := image.Point{X: int(v1.X), Y: int(v1.Y)}
-				drawLine(img, pv, pv1, nil)
+				drawLine(img, pv, pv1, elem.color, elem1.color)
 			}
 			if j+1 < len(m.Points) && i < len(m.Points[j+1]) {
-				v1 := m.projection.Project(m.Points[j+1][i].Vector())
+				elem1 := m.Points[j+1][i]
+				v1 := m.projection.Project(elem1.Vec)
 				pv1 := image.Point{X: int(v1.X), Y: int(v1.Y)}
-				drawLine(img, pv, pv1, nil)
+				drawLine(img, pv, pv1, elem.color, elem1.color)
 			}
 
 		}
@@ -105,7 +107,7 @@ func (m *Fdf) getProjectedBounds() image.Rectangle {
 
 	for _, line := range m.Points {
 		for _, elem := range line {
-			point := m.projection.Project(elem.Vector())
+			point := m.projection.Project(elem.Vec)
 
 			if math.Floor(point.X) < float64(border.Min.X) {
 				border.Min.X = int(math.Floor(point.X))

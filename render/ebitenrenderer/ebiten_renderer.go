@@ -18,7 +18,7 @@ type Game struct {
 
 	fdf render.Engine
 
-	offset math3.Vec3
+	offset math3.Vec
 	img    image.Image
 }
 
@@ -52,26 +52,26 @@ func (g *Game) handleFdfKeys(keys []ebiten.Key) {
 			// g.img = g.fdf.Draw()
 
 		case ebiten.KeyUp:
-			angle = angle.Translate(math3.Vec3{X: 0.01})
+			angle = angle.Translate(math3.Vec{X: 0.01})
 			p.SetAngle(angle)
 		case ebiten.KeyDown:
-			angle = angle.Translate(math3.Vec3{X: -0.01})
+			angle = angle.Translate(math3.Vec{X: -0.01})
 			p.SetAngle(angle)
 		case ebiten.KeyRight:
-			angle = angle.Translate(math3.Vec3{Y: 0.01})
+			angle = angle.Translate(math3.Vec{Y: 0.01})
 			p.SetAngle(angle)
 		case ebiten.KeyLeft:
-			angle = angle.Translate(math3.Vec3{Y: -0.01})
+			angle = angle.Translate(math3.Vec{Y: -0.01})
 			p.SetAngle(angle)
 		case ebiten.KeyShiftRight:
-			angle = angle.Translate(math3.Vec3{Z: 0.01})
+			angle = angle.Translate(math3.Vec{Z: 0.01})
 			p.SetAngle(angle)
 		case ebiten.KeyShiftLeft:
-			angle = angle.Translate(math3.Vec3{Z: -0.01})
+			angle = angle.Translate(math3.Vec{Z: -0.01})
 			p.SetAngle(angle)
 
 		case ebiten.Key0:
-			angle = math3.Vec3{}
+			angle = math3.Vec{}
 			p.SetAngle(angle)
 
 		case ebiten.KeyW:

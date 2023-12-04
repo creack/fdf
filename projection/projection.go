@@ -12,7 +12,7 @@ var (
 	defaultXDeg float64 = -math.Atan(math.Sqrt2)
 	defaultZDeg float64 = -45 * math.Pi / 180
 
-	defaultCameraRotation = math3.Vec3{
+	defaultCameraRotation = math3.Vec{
 		X: defaultXDeg,
 		Z: defaultZDeg,
 	}
@@ -20,33 +20,33 @@ var (
 
 // Projection defines how to project the given 3d point.
 type Projection interface {
-	Project(math3.Vec3) math3.Vec3
+	Project(math3.Vec) math3.Vec
 
-	SetOffset(math3.Vec3)
+	SetOffset(math3.Vec)
 
 	GetScale() float64
 	SetScale(float64)
 
-	GetAngle() math3.Vec3
-	SetAngle(math3.Vec3)
+	GetAngle() math3.Vec
+	SetAngle(math3.Vec)
 }
 
 type direct struct {
-	offset math3.Vec3
+	offset math3.Vec
 	scale  float64
 }
 
 func NewDirect() Projection { return &direct{scale: 1} }
 
-func (d direct) Project(vec math3.Vec3) math3.Vec3 {
-	return math3.Vec3{
+func (d direct) Project(vec math3.Vec) math3.Vec {
+	return math3.Vec{
 		X: vec.X + d.offset.X,
 		Y: vec.Y + d.offset.Y,
 		Z: vec.Z + d.offset.Z,
 	}
 }
 
-func (d *direct) SetOffset(offset math3.Vec3) {
+func (d *direct) SetOffset(offset math3.Vec) {
 	d.offset = offset
 }
 
@@ -54,17 +54,17 @@ func (d direct) GetScale() float64 { return d.scale }
 
 func (d *direct) SetScale(s float64) { d.scale = s }
 
-func (direct) GetAngle() math3.Vec3 { return math3.Vec3{} }
+func (direct) GetAngle() math3.Vec { return math3.Vec{} }
 
-func (*direct) SetAngle(math3.Vec3) {}
+func (*direct) SetAngle(math3.Vec) {}
 
 // isomorphic projection.
 type isomorphic struct {
 	scale int
 
-	offset math3.Vec3
+	offset math3.Vec
 
-	cameraRotation math3.Vec3
+	cameraRotation math3.Vec
 }
 
 func NewIsomorphic(scale int) Projection {
@@ -86,15 +86,15 @@ func (i *isomorphic) SetScale(s float64) {
 
 func (i isomorphic) GetScale() float64 { return float64(i.scale) }
 
-func (i isomorphic) GetAngle() math3.Vec3 { return i.cameraRotation }
+func (i isomorphic) GetAngle() math3.Vec { return i.cameraRotation }
 
-func (i *isomorphic) SetAngle(ang math3.Vec3) { i.cameraRotation = ang }
+func (i *isomorphic) SetAngle(ang math3.Vec) { i.cameraRotation = ang }
 
-func (i *isomorphic) SetOffset(offset math3.Vec3) {
+func (i *isomorphic) SetOffset(offset math3.Vec) {
 	i.offset = offset
 }
 
-func (i isomorphic) Project(vec math3.Vec3) math3.Vec3 {
+func (i isomorphic) Project(vec math3.Vec) math3.Vec {
 	// First scale the vector.
 	vec = vec.Scale(float64(i.scale))
 

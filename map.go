@@ -42,7 +42,7 @@ func parseMap(mapData []byte) ([][]MapPoint, error) {
 			}
 
 			p := MapPoint{
-				Vec3: math3.Vec3{
+				Vec: math3.Vec{
 					X: float64(x),
 					Y: float64(y),
 					Z: float64(h),
@@ -72,15 +72,6 @@ func parseMap(mapData []byte) ([][]MapPoint, error) {
 }
 
 type MapPoint struct {
-	math3.Vec3
+	math3.Vec
 	color color.Color
-}
-
-// Vector returns the map point as a vec3.
-func (mp MapPoint) Vector() math3.Vec3 {
-	return math3.Vec3{
-		X: float64(mp.X),
-		Y: float64(mp.Y),
-		Z: float64(mp.Z),
-	}
 }

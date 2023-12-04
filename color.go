@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"image/color"
+	"math"
 	"strconv"
 	"strings"
 )
@@ -33,4 +34,17 @@ func rgbaFromUint(rgba uint32) color.RGBA {
 	}
 
 	return cc
+}
+
+// getGradientColor returns the color in between col1 and col2 with position as strength.
+// position is a %, between 0 and 1.
+func getGradientColor(col1, col2 color.Color, position float64) color.Color {
+	r1, g1, b1, a1 := col1.RGBA()
+	r2, g2, b2, a2 := col2.RGBA()
+	return color.RGBA{
+		R: uint8(math.Round(float64(uint8(r1))*(1-position) + float64(uint8(r2))*position)),
+		G: uint8(math.Round(float64(uint8(g1))*(1-position) + float64(uint8(g2))*position)),
+		B: uint8(math.Round(float64(uint8(b1))*(1-position) + float64(uint8(b2))*position)),
+		A: uint8(math.Round(float64(uint8(a1))*(1-position) + float64(uint8(a2))*position)),
+	}
 }
