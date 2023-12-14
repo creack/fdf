@@ -2,10 +2,7 @@ module go.creack.net/fdf
 
 go 1.21.4
 
-require (
-	github.com/disintegration/imaging v1.6.2
-	github.com/hajimehoshi/ebiten/v2 v2.6.3
-)
+require github.com/hajimehoshi/ebiten/v2 v2.6.3
 
 require (
 	github.com/ebitengine/purego v0.5.0 // indirect
