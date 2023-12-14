@@ -30,7 +30,7 @@ go install github.com/hajimehoshi/wasmserve@latest
 Clone this repo:
 
 ```sh
-git clone https://github.com/creac/fdf
+git clone https://github.com/creack/fdf
 cd fdf
 ```
 
