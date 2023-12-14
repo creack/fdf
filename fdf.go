@@ -1,11 +1,14 @@
 package main
 
 import (
+	"embed"
 	"fmt"
 	"image"
 	"image/color"
 	"image/draw"
+	"io/fs"
 	"math"
+	"strings"
 
 	"go.creack.net/fdf/math3"
 	"go.creack.net/fdf/projection"
@@ -18,27 +21,51 @@ type Fdf struct {
 	projection projection.Projection
 
 	heightFactor float64
+
+	mapData embed.FS
+	mapName string
 }
 
 // NewFdf loads/parses the map and creates a fdf engine.
-func NewFdf(source string) (*Fdf, error) {
-	buf, err := mapData.ReadFile(source)
-	if err != nil {
-		return nil, fmt.Errorf("fs readfile: %w", err)
-	}
-
+func NewFdf(mapData embed.FS, mapName string) (*Fdf, error) {
 	g := &Fdf{
 		projection:   projection.NewDirect(),
 		heightFactor: 1,
-	}
 
-	m, err := parseMap(buf)
-	if err != nil {
-		return nil, fmt.Errorf("parseMap: %w", err)
+		mapData: mapData,
 	}
-	g.Points = m
-
+	if err := g.LoadMap(mapName); err != nil {
+		return nil, fmt.Errorf("loadMap %q: %w", mapName, err)
+	}
 	return g, nil
+}
+
+// CurrentMapName returns the current map name.
+func (m *Fdf) CurrentMapName() string { return m.mapName }
+
+// ListMaps returns the list of available maps.
+func (m *Fdf) ListMaps() []fs.DirEntry {
+	out, err := m.mapData.ReadDir("maps")
+	if err != nil { // Should never happen, but check just in case.
+		panic(fmt.Errorf("open maps dir: %w", err))
+	}
+	return out
+}
+
+// LoadMap loads the given map name.
+func (m *Fdf) LoadMap(mapName string) error {
+	fmt.Println("Loading new map", mapName)
+	buf, err := mapData.ReadFile(mapName)
+	if err != nil {
+		return fmt.Errorf("fs readfile: %w", err)
+	}
+	newMap, err := parseMap(buf)
+	if err != nil {
+		return fmt.Errorf("parseMap: %w", err)
+	}
+	m.Points = newMap
+	m.mapName = strings.TrimPrefix(mapName, "maps/")
+	return nil
 }
 
 // GetProjection accesses the value.

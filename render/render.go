@@ -3,6 +3,7 @@ package render
 
 import (
 	"image"
+	"io/fs"
 
 	"go.creack.net/fdf/projection"
 )
@@ -21,6 +22,10 @@ type Engine interface {
 	SetHeightFactor(float64)
 
 	Draw() image.Image
+
+	CurrentMapName() string
+	ListMaps() []fs.DirEntry
+	LoadMap(string) error
 }
 
 // Iso is a helper function to initialize an isomorphic projection.

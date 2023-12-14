@@ -25,7 +25,7 @@ func main() {
 		renderer = "ebitengine"
 	}
 
-	g, err := NewFdf(source)
+	g, err := NewFdf(mapData, source)
 	if err != nil {
 		log.Fatalf("NewFdf: %s.", err)
 	}

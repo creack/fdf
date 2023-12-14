@@ -34,6 +34,22 @@ func (g *Game) Update() error {
 	g.keys = inpututil.AppendPressedKeys(g.keys[:0])
 
 	g.handleFdfKeys(g.keys)
+
+	if inpututil.IsKeyJustPressed(ebiten.KeyC) {
+		entries := g.fdf.ListMaps()
+		i := -1
+		for ii, elem := range entries {
+			if elem.Name() == g.fdf.CurrentMapName() {
+				i = ii
+				break
+			}
+		}
+		if err := g.fdf.LoadMap("maps/" + entries[(i+1)%len(entries)].Name()); err != nil {
+			return fmt.Errorf("loadMap: %w", err)
+		}
+		g.img = image.NewRGBA(image.Rect(0, 0, 0, 0))
+		g.tainted = true
+	}
 	return nil
 }
 
@@ -155,6 +171,19 @@ Camera:
 		g.fdf.GetProjection().GetAngle().Z,
 	)
 	ebitenutil.DebugPrintAt(screen, msg, screenWidth-150, 1)
+	ebitenutil.DebugPrint(screen, fmt.Sprintf(`TPS: %0.2f, FPS: %0.2f
+Resolution: %dx%d
+Map: %s
+
+Controls:
+  W/A/S/D: Move
+  Up/Down/Left/Right/Shift Left/Shift Right: Rotate
+  C: Cycle maps
+  I: Reset view to Isometric
+  0: Reset view to 0 angles.
+  1/2: Change height scale factor
+  3/4: Zoom in/out
+`, ebiten.ActualTPS(), ebiten.ActualFPS(), g.screenWidth, g.screenHeight, g.fdf.CurrentMapName()))
 }
 
 // Layout implements the ebiten.Game interface.
